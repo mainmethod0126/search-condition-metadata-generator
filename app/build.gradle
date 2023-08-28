@@ -18,31 +18,32 @@ buildscript {
 }
 
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
-    id 'application'
+  // Apply the application plugin to add support for building a CLI application in Java.
+  id 'application'
+  id 'maven-publish'
 }
 
 apply plugin: "io.github.mainmethod0126.simple-semantic-version"
 
 repositories {
-    // Use Maven Central for resolving dependencies.
-    mavenCentral()
+  // Use Maven Central for resolving dependencies.
+  mavenCentral()
 }
 
 dependencies {
 
-    // https://mvnrepository.com/artifact/com.google.code.gson/gson
-	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+  // https://mvnrepository.com/artifact/com.google.code.gson/gson
+  implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
 
 
-    // Use JUnit Jupiter for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+  // Use JUnit Jupiter for testing.
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
 
-    // https://mvnrepository.com/artifact/org.assertj/assertj-core
-    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
+  // https://mvnrepository.com/artifact/org.assertj/assertj-core
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
 
-    // This dependency is used by the application.
-    implementation 'com.google.guava:guava:31.1-jre'
+  // This dependency is used by the application.
+  implementation 'com.google.guava:guava:31.1-jre'
 }
 
 
@@ -51,7 +52,7 @@ publishing {
 
 	String inputUsername = project.findProperty("username") ?: ""
 	String inputPassword = project.findProperty("password") ?: ""
-    String inputMavenRepoUrl = project.findProperty("url") ?: ""
+  String inputMavenRepoUrl = project.findProperty("url") ?: ""
 
 	if (inputUsername.isEmpty()) {
 		if (project.hasProperty('mavenRepoUserId')) {
@@ -69,43 +70,43 @@ publishing {
 		}
 	}
 
-    if (inputMavenRepoUrl.isEmpty()) {
-		if (project.hasProperty('mavenRepoUrl')) {
-			inputMavenRepoUrl = "$mavenRepoUrl"
-		} else {
-			println("Warning : maven repository url is required but not entered. Enter it using the gradle task parameter or define mavenRepoUrl in ~/.gradle/gradle.properties");
-		}
+  if (inputMavenRepoUrl.isEmpty()) {
+    if (project.hasProperty('mavenRepoUrl')) {
+      inputMavenRepoUrl = "$mavenRepoUrl"
+    } else {
+      println("Warning : maven repository url is required but not entered. Enter it using the gradle task parameter or define mavenRepoUrl in ~/.gradle/gradle.properties");
     }
+  }
 
-    publications {
-        mavenJava(MavenPublication) { 
-            from components.java
+  publications {
+    mavenJava(MavenPublication) { 
+      from components.java
 
-            groupId = 'io.github.mainmethod0126'
-            artifactId = 'search-condition-metadata-generator'
+      groupId = 'io.github.mainmethod0126'
+      artifactId = 'search-condition-metadata-generator'
 
-            println("publish infos")
-            println("groupId : " + groupId)
-            println("artifactId : " + artifactId)
-            
-            
-            pom {
-                name = 'search-condition-metadata-generator'
-                description = 'This library provides metadata on what searches are possible for domain objects'
-            }
-        }
+      println("publish infos")
+      println("groupId : " + groupId)
+      println("artifactId : " + artifactId)
+      
+      
+      pom {
+          name = 'search-condition-metadata-generator'
+          description = 'This library provides metadata on what searches are possible for domain objects'
+      }
     }
+  }
 
-    repositories {
-        maven{
-          credentials {
-              username = inputUsername
-              password = inputPassword
-          }
+  repositories {
+    maven{
+      credentials {
+          username = inputUsername
+          password = inputPassword
+      }
 
-			    url = inputMavenRepoUrl
-        }
+      url = inputMavenRepoUrl
     }
+  }
 }
 
 
