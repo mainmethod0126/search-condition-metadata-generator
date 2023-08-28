@@ -1,20 +1,93 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# search condition metadata generator
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+This library provides metadata on what searches are possible for domain objects
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Usage
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+### Example
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+Here is an example of metadata generation for the 'TestOrder' domain class.
+
+> There are also several other classes such as TestCustomer and TestProduct. For detailed information about these classes, please refer to the source code. Thank you.
+
+```java
+public class TestOrder {
+    private String description;
+
+    private TestCustomer customer;
+
+    private List<TestProduct> products;
+
+    private Map<String, TestShippingInfo> shippingInfo;
+}
+```
+
+```java
+public class MetaDataGeneratorTest {
+
+    @Test
+    @DisplayName("Generates metadata from a valid domain class")
+    public void testGenerator_whenNormalParam_thenSuccess() {
+
+        String result = MetaDataGenerator.generate(TestOrder.class);
+
+        System.out.println("metadata : " + result);
+
+        assertThat(result).isNotNull().isNotEmpty();
+
+    }
+
+}
+```
+
+#### Result
+
+```bash
+metadata : [
+  {
+    "name": "description",
+    "type": "string",
+    "operators": ["=", "!=", "in", "not in", "regex", "wildcard"]
+  },
+  {
+    "name": "customer.user.id",
+    "type": "number",
+    "operators": ["=", "!=", ">=", "<=", ">", "<"]
+  },
+  {
+    "name": "customer.user.name",
+    "type": "string",
+    "operators": ["=", "!=", "in", "not in", "regex", "wildcard"]
+  },
+  {
+    "name": "customer.description",
+    "type": "string",
+    "operators": ["=", "!=", "in", "not in", "regex", "wildcard"]
+  },
+  {
+    "name": "products.name",
+    "type": "string",
+    "operators": ["=", "!=", "in", "not in", "regex", "wildcard"]
+  },
+  {
+    "name": "products.price",
+    "type": "number",
+    "operators": ["=", "!=", ">=", "<=", ">", "<"]
+  },
+  {
+    "name": "shippingInfo.productId",
+    "type": "number",
+    "operators": ["=", "!=", ">=", "<=", ">", "<"]
+  },
+  {
+    "name": "shippingInfo.quantity",
+    "type": "string",
+    "operators": ["=", "!=", "in", "not in", "regex", "wildcard"]
+  },
+  {
+    "name": "shippingInfo.wrapping.style",
+    "type": "string",
+    "operators": ["=", "!=", "in", "not in", "regex", "wildcard"]
+  }
+]
+```
