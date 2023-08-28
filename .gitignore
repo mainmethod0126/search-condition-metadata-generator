@@ -20,8 +20,9 @@ build
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+*/dist
+
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
