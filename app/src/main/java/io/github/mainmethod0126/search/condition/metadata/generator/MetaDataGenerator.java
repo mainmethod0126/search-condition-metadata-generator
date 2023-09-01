@@ -1,7 +1,9 @@
 package io.github.mainmethod0126.search.condition.metadata.generator;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -24,11 +26,7 @@ public class MetaDataGenerator {
         JsonArray fields = new JsonArray();
 
         for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(MetaDataField.class)) {
-            } else {
-                toJson(fields, "", field);
-            }
-
+            toJson(fields, "", field);
         }
 
         return fields.toString();
@@ -45,6 +43,7 @@ public class MetaDataGenerator {
         }
 
         if (isNumeric(type)) {
+
             jsonObject.addProperty("name", parentName + field.getName());
 
             jsonObject.addProperty("type", "number");
@@ -58,6 +57,11 @@ public class MetaDataGenerator {
             operators.add("<");
 
             jsonObject.add("operators", operators);
+
+            Annotation annotation = field.getAnnotation(MetaDataField.class);
+            if (annotation != null) {
+                overwriteCustomValue(annotation, jsonObject, parentName);
+            }
 
             fields.add(jsonObject);
 
@@ -76,6 +80,11 @@ public class MetaDataGenerator {
             operators.add("wildcard");
 
             jsonObject.add("operators", operators);
+
+            Annotation annotation = field.getAnnotation(MetaDataField.class);
+            if (annotation != null) {
+                overwriteCustomValue(annotation, jsonObject, parentName);
+            }
 
             fields.add(jsonObject);
 
@@ -102,6 +111,29 @@ public class MetaDataGenerator {
             for (Field f : type.getDeclaredFields()) {
                 toJson(fields, parentName + field.getName(), f);
             }
+        }
+    }
+
+    private static void overwriteCustomValue(Annotation annotation, JsonObject jsonObject, String parentName) {
+
+        MetaDataField metaDataField = (MetaDataField) annotation;
+
+        if (!metaDataField.name().isBlank()) {
+            jsonObject.addProperty("name", parentName + metaDataField.name());
+        }
+
+        if (!metaDataField.type().isBlank()) {
+            jsonObject.addProperty("type", metaDataField.type());
+        }
+
+        JsonArray operators = new JsonArray();
+
+        for (String operator : Arrays.asList(metaDataField.operators())) {
+            operators.add(operator);
+        }
+
+        if (!operators.isEmpty()) {
+            jsonObject.add("operators", operators);
         }
 
     }
